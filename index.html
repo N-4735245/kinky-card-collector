@@ -12,6 +12,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
     integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #ffffff;
@@ -49,6 +53,13 @@
       background-color: var(--bg);
       color: var(--text);
       transition: background-color .2s ease, color .2s ease;
+      font-family: 'EB Garamond', Georgia, serif;
+    }
+
+    .page-title,
+    .deck h2,
+    .deck-tabs .nav-link {
+      font-family: 'Eagle Lake', cursive;
     }
 
     .lead {
@@ -65,14 +76,20 @@
       color: var(--text);
     }
 
-    .deck-tabs .nav-link[data-deck="starter"].active { border-top: 3px solid #6cb2eb; color: #6cb2eb; }
-    .deck-tabs .nav-link[data-deck="main"].active { border-top: 3px solid #d9534f; color: #d9534f; }
-    .deck-tabs .nav-link[data-deck="ending"].active { border-top: 3px solid #9c8fd6; color: #9c8fd6; }
+    .deck-tabs .nav-link[data-deck="starter"].active { border-top: 3px solid #6d3fb5; color: #6d3fb5; }
+    .deck-tabs .nav-link[data-deck="main"].active { border-top: 3px solid #1f6fd6; color: #1f6fd6; }
+    .deck-tabs .nav-link[data-deck="ending"].active { border-top: 3px solid #d6249f; color: #d6249f; }
 
     .active-card {
-      background-color: var(--card-bg);
-      border-color: var(--card-border) !important;
-      box-shadow: 0 2px 8px var(--card-shadow);
+      padding: 0;
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      background-color: transparent;
+      margin: 0 auto 20px auto;
       color: var(--text);
       display: flex;
       align-items: center;
@@ -81,13 +98,19 @@
 
     .active-card-img {
       max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      max-height: 480px;
+      display: block;
+      filter: drop-shadow(0 10px 22px var(--card-shadow));
     }
 
-    .deck-pane[data-deck="starter"] .active-card { border-top: 4px solid #6cb2eb; }
-    .deck-pane[data-deck="main"] .active-card { border-top: 4px solid #d9534f; }
-    .deck-pane[data-deck="ending"] .active-card { border-top: 4px solid #9c8fd6; }
+    .btn-deck-starter { background-color: #6d3fb5; border-color: #6d3fb5; color: #fff; }
+    .btn-deck-starter:hover, .btn-deck-starter:focus { background-color: #5c349c; border-color: #5c349c; color: #fff; }
+
+    .btn-deck-main { background-color: #1f6fd6; border-color: #1f6fd6; color: #fff; }
+    .btn-deck-main:hover, .btn-deck-main:focus { background-color: #1a5cb3; border-color: #1a5cb3; color: #fff; }
+
+    .btn-deck-ending { background-color: #d6249f; border-color: #d6249f; color: #fff; }
+    .btn-deck-ending:hover, .btn-deck-ending:focus { background-color: #b31f85; border-color: #b31f85; color: #fff; }
 
     .theme-toggle-btn {
       position: fixed;
@@ -139,7 +162,7 @@
           <p id="card-placeholder-starter" class="active-card-text">Click draw to begin.</p>
           <img id="card-img-starter" class="active-card-img d-none" alt="Starter card">
         </div>
-        <p><button class="btn btn-lg btn-success" onclick="drawCard('starter');">Draw</button></p>
+        <p><button class="btn btn-lg btn-deck-starter" onclick="drawCard('starter');">Draw</button></p>
       </div>
     </div>
 
@@ -150,7 +173,7 @@
           <p id="card-placeholder-main" class="active-card-text">Click draw to begin.</p>
           <img id="card-img-main" class="active-card-img d-none" alt="Main card">
         </div>
-        <p><button class="btn btn-lg btn-success" onclick="drawCard('main');">Draw</button></p>
+        <p><button class="btn btn-lg btn-deck-main" onclick="drawCard('main');">Draw</button></p>
       </div>
     </div>
 
@@ -161,7 +184,7 @@
           <p id="card-placeholder-ending" class="active-card-text">Click draw to begin.</p>
           <img id="card-img-ending" class="active-card-img d-none" alt="Ending card">
         </div>
-        <p><button class="btn btn-lg btn-success" onclick="drawCard('ending');">Draw</button></p>
+        <p><button class="btn btn-lg btn-deck-ending" onclick="drawCard('ending');">Draw</button></p>
       </div>
     </div>
 
