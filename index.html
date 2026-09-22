@@ -124,7 +124,7 @@
       border-radius: 20px;
       padding: 6px 18px;
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: 2.5rem;
+      font-size: 1.5rem;
       cursor: pointer;
       margin: 32px 0;
       display: inline-block;
@@ -139,8 +139,6 @@
       background-color: var(--card-bg);
       position: sticky;
       top: 1.5rem;
-      right: 2.5rem;
-      left: auto;
       z-index: 5;
     }
 
@@ -276,6 +274,7 @@
       <button id="solo-tracker-toggle" class="solo-toggle-btn" onclick="toggleSoloTracker();">Solo Mode Tracker</button>
     </div>
 
+  <div style="display: flex; align-items: flex-end; gap: 20px;">
     <div id="solo-tracker-panel" class="solo-tracker-panel d-none">
       <div class="solo-tracker-row">
         <label for="clothing-count">Clothing Items Worn</label>
@@ -332,7 +331,7 @@
         <p><button class="btn btn-lg btn-deck-ending" onclick="drawCard('ending');">Draw</button></p>
       </div>
     </div>
-
+  </div>
   </div>
 
 
