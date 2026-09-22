@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kinky Card Collector</title>
+  <title>N's Reverie | Kinky Card Collector</title>
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -13,115 +13,193 @@
     integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
 
   <style>
-    /* Force overall dark mode theme colors */
+    :root {
+      --bg: #ffffff;
+      --text: #212529;
+      --muted: #6c757d;
+      --card-bg: #ffffff;
+      --card-border: #ddd;
+      --card-shadow: rgba(0, 0, 0, .08);
+      --tab-border: #dee2e6;
+    }
+
+    [data-theme="dark"] {
+      --bg: #16181c;
+      --text: #e8e6e3;
+      --muted: #9aa0a6;
+      --card-bg: #202226;
+      --card-border: #3a3d42;
+      --card-shadow: rgba(0, 0, 0, .5);
+      --tab-border: #3a3d42;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #16181c;
+        --text: #e8e6e3;
+        --muted: #9aa0a6;
+        --card-bg: #202226;
+        --card-border: #3a3d42;
+        --card-shadow: rgba(0, 0, 0, .5);
+        --tab-border: #3a3d42;
+      }
+    }
+
     body {
-      background-color: #121212 !important;
-      color: #ffffff !important;
-    }
-    
-    /* Make structural container cards dark grey with white text */
-    .card, .container, .box, #setup-section, #draw-section {
-      background-color: #1e1e1e !important;
-      color: #ffffff !important;
-      border-color: #000000 !important;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color .2s ease, color .2s ease;
     }
 
-    /* Force interactive input forms and buttons to contrast nicely */
-    textarea, input, select {
-      background-color: #2a2a2a !important;
-      color: #ffffff !important;
-      border: 1px solid #444444 !important;
+    .lead {
+      color: var(--muted);
     }
 
-    /* Style the main virtual drawn card so text stays crisp and legible */
-    #current-card, .virtual-card-face {
-      background-color: #252525 !important;
-      color: #ffffff !important;
-      border: 2px solid #000000 !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+    .deck-tabs {
+      border-bottom-color: var(--tab-border);
+    }
+
+    .deck-tabs .nav-link {
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .deck-tabs .nav-link[data-deck="starter"].active { border-top: 3px solid #6cb2eb; color: #6cb2eb; }
+    .deck-tabs .nav-link[data-deck="main"].active { border-top: 3px solid #d9534f; color: #d9534f; }
+    .deck-tabs .nav-link[data-deck="ending"].active { border-top: 3px solid #9c8fd6; color: #9c8fd6; }
+
+    .active-card {
+      background-color: var(--card-bg);
+      border-color: var(--card-border) !important;
+      box-shadow: 0 2px 8px var(--card-shadow);
+      color: var(--text);
+    }
+
+    .deck-pane[data-deck="starter"] .active-card { border-top: 4px solid #6cb2eb; }
+    .deck-pane[data-deck="main"] .active-card { border-top: 4px solid #d9534f; }
+    .deck-pane[data-deck="ending"] .active-card { border-top: 4px solid #9c8fd6; }
+
+    .theme-toggle-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background-color: var(--card-bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
-
 </head>
 
 <body>
+
+  <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme();" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+  </button>
+
   <div class="container">
     <div class="text-center">
       <div class="display-4 page-title">Kinky Card Collector</div>
       <p class="lead">Draw your cards here and play against yourself (or a partner) <3</p>
     </div>
-    
-    <!-- 
-    
-    <h2>Setup
-      <span class="float-right">
-        <i id="setup-show" onclick="setupToggleHide();" class="fas fa-chevron-down"></i>
-      </span>
-    </h2>
-    <div class="game-setup">
-      <form id="setup" onsubmit="setupComplete();">
-        <div class="form-group">
-          <label for="setup-card-content">Card content</label>
-          <textarea class="form-control" id="setup-card-content" rows="5"></textarea>
-          <small class="form-text text-muted">One card per line. Supports basic HTML.</small>
+
+    <ul class="nav nav-tabs deck-tabs justify-content-center" id="deckTabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-deck="starter" onclick="switchDeck('starter');">Starter</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-deck="main" onclick="switchDeck('main');">Main</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-deck="ending" onclick="switchDeck('ending');">Ending</a>
+      </li>
+    </ul>
+
+    <div class="deck-pane" data-deck="starter">
+      <div class="deck">
+        <h2 class="mt-4">Starter deck</h2>
+        <div class="active-card">
+          <p id="card-text-starter" class="active-card-text">Click draw to begin.</p>
         </div>
-        <div class="form-group">
-          <button type="button" class="btn btn-lg btn-success" onclick="setupComplete();">Go!</button>
-        </div>
-      </form>
-      <hr />
-    </div> 
-    
-    -->
-    
-    <div id="deck" class="deck">
-      <h2>Draw a card</h2>
-      <div class="active-card">
-        <p id="card-text" class="active-card-text"></p>
+        <p><button class="btn btn-lg btn-success" onclick="drawCard('starter');">Draw</button></p>
       </div>
-      <p>
-        <button class="btn btn-lg btn-success" onclick="drawCard();">Draw</button>
-      </p>
+    </div>
+
+    <div class="deck-pane d-none" data-deck="main">
+      <div class="deck">
+        <h2 class="mt-4">Main deck</h2>
+        <div class="active-card">
+          <p id="card-text-main" class="active-card-text">Click draw to begin.</p>
+        </div>
+        <p><button class="btn btn-lg btn-success" onclick="drawCard('main');">Draw</button></p>
+      </div>
+    </div>
+
+    <div class="deck-pane d-none" data-deck="ending">
+      <div class="deck">
+        <h2 class="mt-4">Ending deck</h2>
+        <div class="active-card">
+          <p id="card-text-ending" class="active-card-text">Click draw to begin.</p>
+        </div>
+        <p><button class="btn btn-lg btn-success" onclick="drawCard('ending');">Draw</button></p>
+      </div>
     </div>
 
   </div>
 
   <script>
-    // SETUP
-    let Deck;
-    let CardList = [
-      "<img src='cards/Ending Card - Sample.png' style='max-width:100%; height:auto;'>",
-      "<img src='cards/Starter Card - Sample.png' style='max-width:100%; height:auto;'>",
-    ];
+    // Hardcoded card content. Edit these three lists directly to change what's in each deck
+    // — one string per card, same "one per line" spirit as the original setup box.
+    const CardLists = {
+      starter: [
+        "Ask your partner to describe what they want to do tonight — no touching yet.",
+        "Trace a single finger along their collarbone, slow enough to be a tease.",
+        "Whisper one thing you've been thinking about all day.",
+        "Blindfold on. No talking for two minutes, just touch.",
+        "Say your limit and your green light out loud before going further.",
+        "Light scratches down the back, nothing else, for 30 seconds.",
+        "Hold eye contact for a full minute without touching or speaking.",
+        "Slowly undress one item of clothing, no rush.",
+        "Ask: “What's one thing you want me to do differently tonight?”",
+        "Pick a safeword check-in and agree on it before continuing."
+      ],
+      main: [
+        "Restrain their wrists — rope, cuffs, or a scarf — for the next five minutes.",
+        "Give three firm spanks, then ask how it felt.",
+        "Whisper something filthy and make them repeat it back.",
+        "Edge them — bring them close, then stop completely. Repeat twice.",
+        "Blindfolded: guess the sensation being used on your skin.",
+        "Give a command and expect it followed without question, just this once.",
+        "Trade roles for the next three cards, no explanation given.",
+        "Use something cold somewhere unexpected.",
+        "One person controls orgasm for 10 minutes — the other must ask permission.",
+        "Bite, gently, somewhere that leaves a mark you'll find tomorrow.",
+        "Tie a simple rope cuff or harness element, however far your skill goes.",
+        "Switch who's giving orders for the rest of the scene."
+      ],
+      ending: [
+        "Bring water. Make sure it's actually been drunk.",
+        "Wrap up in a blanket together and just breathe for two minutes.",
+        "Say one genuine thing you appreciated about tonight.",
+        "Rate the scene 1–10 — explain only if you want to.",
+        "Ask “is there anything you need right now?” and actually wait for the answer.",
+        "Gentle touch only — no more play, just comfort.",
+        "Offer a snack. Sugar helps more than people expect.",
+        "Ask if there's anything to talk through before tomorrow.",
+        "Hold each other in silence for as long as feels right.",
+        "Write down one thing to remember for next time."
+      ]
+    };
 
-    function setupToggleHide() {
-      let form = document.getElementById('setup');
-      form.classList.toggle('d-none');
-    }
-
-    function setupComplete() {
-      let setupCardContent = document.getElementById('setup-card-content').value;
-      let setupCards = setupCardContent.split('\n');
-
-      for (let i = 0; i < setupCards.length; i++) {
-        if (setupCards[i] == "") {
-          setupCards.splice(i, 1);
-          i--;
-        }
-      }
-
-      if (setupCards.length > 0) {
-        CardList = [];
-        CardList = setupCards.slice();
-
-        console.log("INFO: The following cards were parsed.");
-        console.log(CardList);
-
-        refillCards();
-        document.getElementById('setup').classList.add('d-none');
-        document.getElementById('deck').classList.remove('d-none');
-      }
-    }
+    let Decks = { starter: [], main: [], ending: [] };
 
     function shuffle(a) {
       for (let i = a.length - 1; i > 0; i--) {
@@ -131,25 +209,69 @@
       return a;
     }
 
-    function refillCards() {
-      Deck = [];
-      Deck = CardList.slice();
-      Deck = shuffle(Deck);
-      console.log('INFO: Deck was refilled and shuffled.');
+    function refillCards(deckName) {
+      Decks[deckName] = shuffle(CardLists[deckName].slice());
+      console.log('INFO: ' + deckName + ' deck refilled and shuffled.');
     }
 
-    // GAME
-    function drawCard() {
-      if (Deck.length < 1) {
-        refillCards();
+    function drawCard(deckName) {
+      if (Decks[deckName].length < 1) {
+        refillCards(deckName);
+      }
+      let card = Decks[deckName].pop();
+      document.getElementById('card-text-' + deckName).innerHTML = card;
+    }
+
+    function switchDeck(deckName) {
+      document.querySelectorAll('.deck-tabs .nav-link').forEach(function (tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-deck') === deckName);
+      });
+
+      document.querySelectorAll('.deck-pane').forEach(function (pane) {
+        pane.classList.toggle('d-none', pane.getAttribute('data-deck') !== deckName);
+      });
+    }
+
+    // Each deck shuffles independently on load, so switching tabs never resets the others.
+    Object.keys(CardLists).forEach(refillCards);
+
+    // THEME
+    function updateToggleIcon(theme) {
+      let icon = document.querySelector('#theme-toggle i');
+      if (icon) {
+        icon.classList.toggle('fa-moon', theme !== 'dark');
+        icon.classList.toggle('fa-sun', theme === 'dark');
+      }
+    }
+
+    function toggleTheme() {
+      let systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let current = document.documentElement.getAttribute('data-theme') || (systemDark ? 'dark' : 'light');
+      let next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      updateToggleIcon(next);
+      try {
+        localStorage.setItem('virtudeck-theme', next);
+      } catch (e) {
+        console.log('INFO: could not persist theme preference.');
+      }
+    }
+
+    (function initTheme() {
+      let stored = null;
+      try {
+        stored = localStorage.getItem('virtudeck-theme');
+      } catch (e) {
+        stored = null;
       }
 
-      let card = Deck.pop();
-      document.getElementById('card-text').innerHTML = card;
-      console.log(card);
-    }
-
-    refillCards();
+      if (stored) {
+        document.documentElement.setAttribute('data-theme', stored);
+        updateToggleIcon(stored);
+      } else {
+        updateToggleIcon(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      }
+    })();
   </script>
 </body>
 
