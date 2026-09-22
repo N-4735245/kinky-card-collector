@@ -117,6 +117,96 @@
     .btn-deck-ending { background-color: #d6249f; border-color: #d6249f; color: #fff; }
     .btn-deck-ending:hover, .btn-deck-ending:focus { background-color: #b31f85; border-color: #b31f85; color: #fff; }
 
+    .solo-toggle-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .solo-tracker-panel {
+      max-width: 360px;
+      margin: 16px auto 8px auto;
+      padding: 18px;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      background-color: var(--card-bg);
+    }
+
+    .solo-tracker-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .solo-tracker-row input {
+      width: 64px;
+      text-align: center;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .solo-tracker-target {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+    }
+
+    .solo-tracker-counters {
+      display: flex;
+      justify-content: space-around;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .solo-counter {
+      text-align: center;
+    }
+
+    .solo-counter-value {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 4px 0;
+    }
+
+    .solo-counter button {
+      border: 1px solid var(--card-border);
+      background-color: var(--bg);
+      color: var(--text);
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+
+    .solo-status {
+      text-align: center;
+      font-weight: 600;
+      min-height: 22px;
+      margin-bottom: 8px;
+    }
+
+    .solo-reset-btn {
+      display: block;
+      margin: 0 auto;
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 4px 14px;
+      cursor: pointer;
+    }
+
     .theme-toggle-btn {
       position: fixed;
       top: 16px;
@@ -162,9 +252,33 @@
     <div class="text-center">
       <div class="display-4 page-title">Kinky Card Collector</div>
       <p class="lead">Draw your cards here and play against yourself (or a partner) &lt;3</p>
-      
+      <button id="solo-tracker-toggle" class="solo-toggle-btn" onclick="toggleSoloTracker();">Solo tracker</button>
     </div>
-<hr><br /><br />
+
+    <div id="solo-tracker-panel" class="solo-tracker-panel d-none">
+      <div class="solo-tracker-row">
+        <label for="clothing-count">Clothing items worn</label>
+        <input type="number" id="clothing-count" min="0" value="0" oninput="updateSoloTarget();">
+      </div>
+      <div class="solo-tracker-target">Target: <span id="solo-target">0</span> points</div>
+      <div class="solo-tracker-counters">
+        <div class="solo-counter">
+          <div>Points</div>
+          <div class="solo-counter-value" id="solo-points">0</div>
+          <button onclick="adjustSolo('points', 1);" aria-label="Add a point">+</button>
+          <button onclick="adjustSolo('points', -1);" aria-label="Remove a point">&minus;</button>
+        </div>
+        <div class="solo-counter">
+          <div>Fails</div>
+          <div class="solo-counter-value" id="solo-fails">0</div>
+          <button onclick="adjustSolo('fails', 1);" aria-label="Add a fail">+</button>
+          <button onclick="adjustSolo('fails', -1);" aria-label="Remove a fail">&minus;</button>
+        </div>
+      </div>
+      <div id="solo-status" class="solo-status"></div>
+      <button class="solo-reset-btn" onclick="resetSolo();">Reset session</button>
+    </div>
+
     <ul class="nav nav-tabs deck-tabs justify-content-center" id="deckTabs" role="tablist">
       <li class="nav-item">
         <a class="nav-link active" data-deck="starter" onclick="switchDeck('starter');">Starter</a>
@@ -179,33 +293,33 @@
 
     <div class="deck-pane" data-deck="starter">
       <div class="deck">
-        <h2 class="mt-4">Starter deck</h2><br />
+        <h2 class="mt-4">Starter deck</h2>
         <div class="active-card">
           <p id="card-placeholder-starter" class="active-card-text">Click draw to begin.</p>
           <img id="card-img-starter" class="active-card-img d-none" alt="Starter card">
-        </div><br />
+        </div>
         <p><button class="btn btn-lg btn-deck-starter" onclick="drawCard('starter');">Draw</button></p>
       </div>
     </div>
 
     <div class="deck-pane d-none" data-deck="main">
       <div class="deck">
-        <h2 class="mt-4">Main deck</h2><br />
+        <h2 class="mt-4">Main deck</h2>
         <div class="active-card">
           <p id="card-placeholder-main" class="active-card-text">Click draw to begin.</p>
           <img id="card-img-main" class="active-card-img d-none" alt="Main card">
-        </div><br />
+        </div>
         <p><button class="btn btn-lg btn-deck-main" onclick="drawCard('main');">Draw</button></p>
       </div>
     </div>
 
     <div class="deck-pane d-none" data-deck="ending">
       <div class="deck">
-        <h2 class="mt-4">Ending deck</h2><br />
+        <h2 class="mt-4">Ending deck</h2>
         <div class="active-card">
           <p id="card-placeholder-ending" class="active-card-text">Click draw to begin.</p>
           <img id="card-img-ending" class="active-card-img d-none" alt="Ending card">
-        </div><br />
+        </div>
         <p><button class="btn btn-lg btn-deck-ending" onclick="drawCard('ending');">Draw</button></p>
       </div>
     </div>
@@ -293,6 +407,71 @@
 
     // Each deck shuffles independently on load, so switching tabs never resets the others.
     Object.keys(CardLists).forEach(refillCards);
+
+    // SOLO TRACKER
+    let soloState = { clothing: 0, points: 0, fails: 0 };
+
+    function loadSolo() {
+      try {
+        let saved = localStorage.getItem('solo-tracker-state');
+        if (saved) soloState = JSON.parse(saved);
+      } catch (e) {
+        soloState = { clothing: 0, points: 0, fails: 0 };
+      }
+    }
+
+    function saveSolo() {
+      try {
+        localStorage.setItem('solo-tracker-state', JSON.stringify(soloState));
+      } catch (e) {
+        console.log('INFO: could not persist solo tracker state.');
+      }
+    }
+
+    function renderSolo() {
+      document.getElementById('clothing-count').value = soloState.clothing;
+      let target = soloState.clothing * 3;
+      document.getElementById('solo-target').textContent = target;
+      document.getElementById('solo-points').textContent = soloState.points;
+      document.getElementById('solo-fails').textContent = soloState.fails;
+
+      let status = document.getElementById('solo-status');
+      if (target > 0 && soloState.points >= target) {
+        status.textContent = 'Target reached \u2014 you win!';
+        status.style.color = '#1f9d55';
+      } else if (target > 0 && soloState.fails > target) {
+        status.textContent = 'Too many fails \u2014 game over.';
+        status.style.color = '#d6249f';
+      } else {
+        status.textContent = '';
+      }
+    }
+
+    function updateSoloTarget() {
+      let val = parseInt(document.getElementById('clothing-count').value, 10);
+      soloState.clothing = isNaN(val) ? 0 : Math.max(0, val);
+      saveSolo();
+      renderSolo();
+    }
+
+    function adjustSolo(field, delta) {
+      soloState[field] = Math.max(0, (soloState[field] || 0) + delta);
+      saveSolo();
+      renderSolo();
+    }
+
+    function resetSolo() {
+      soloState = { clothing: soloState.clothing, points: 0, fails: 0 };
+      saveSolo();
+      renderSolo();
+    }
+
+    function toggleSoloTracker() {
+      document.getElementById('solo-tracker-panel').classList.toggle('d-none');
+    }
+
+    loadSolo();
+    renderSolo();
 
     // THEME
     function updateToggleIcon(theme) {
