@@ -124,7 +124,7 @@
       border-radius: 20px;
       padding: 6px 18px;
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: 1rem;
+      font-size: 2.5rem;
       cursor: pointer;
       margin: 32px 0;
       display: inline-block;
@@ -138,7 +138,9 @@
       border-radius: 12px;
       background-color: var(--card-bg);
       position: sticky;
-      top: 16px;
+      top: 1.5rem;
+      right: 2.5rem;
+      left: auto;
       z-index: 5;
     }
 
@@ -271,12 +273,12 @@
     </ul>
 
     <div class="text-center">
-      <button id="solo-tracker-toggle" class="solo-toggle-btn" onclick="toggleSoloTracker();">Solo tracker</button>
+      <button id="solo-tracker-toggle" class="solo-toggle-btn" onclick="toggleSoloTracker();">Solo Mode Tracker</button>
     </div>
 
     <div id="solo-tracker-panel" class="solo-tracker-panel d-none">
       <div class="solo-tracker-row">
-        <label for="clothing-count">Clothing items worn</label>
+        <label for="clothing-count">Clothing Items Worn</label>
         <input type="number" id="clothing-count" min="0" value="0" oninput="updateSoloTarget();">
       </div>
       <div class="solo-tracker-target">Target: <span id="solo-target">0</span> points</div>
