@@ -57,9 +57,12 @@
     }
 
     .page-title,
-    .deck h2,
-    .deck-tabs .nav-link {
+    .deck h2 {
       font-family: 'Permanent Marker', cursive;
+    }
+
+    .deck-tabs .nav-link {
+      font-family: 'EB Garamond', Georgia, serif;
     }
 
     .lead {
@@ -127,6 +130,22 @@
       justify-content: center;
       cursor: pointer;
       z-index: 10;
+    }
+
+    @media (min-width: 992px) {
+      .deck-tabs .nav-link {
+        font-size: 1.35rem;
+        padding: 0.9rem 1.75rem;
+      }
+
+      .active-card-img {
+        max-height: 640px;
+      }
+
+      .deck-pane .btn-lg {
+        font-size: 1.35rem;
+        padding: 0.85rem 2.25rem;
+      }
     }
   </style>
 </head>
