@@ -74,6 +74,15 @@
       border-color: var(--card-border) !important;
       box-shadow: 0 2px 8px var(--card-shadow);
       color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .active-card-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
 
     .deck-pane[data-deck="starter"] .active-card { border-top: 4px solid #6cb2eb; }
@@ -108,7 +117,7 @@
   <div class="container">
     <div class="text-center">
       <div class="display-4 page-title">Kinky Card Collector</div>
-      <p class="lead">Draw your cards here and play against yourself (or a partner) <3</p>
+      <p class="lead">Draw your cards here and play against yourself (or a partner) &lt;3</p>
     </div>
 
     <ul class="nav nav-tabs deck-tabs justify-content-center" id="deckTabs" role="tablist">
@@ -127,7 +136,8 @@
       <div class="deck">
         <h2 class="mt-4">Starter deck</h2>
         <div class="active-card">
-          <p id="card-text-starter" class="active-card-text">Click draw to begin.</p>
+          <p id="card-placeholder-starter" class="active-card-text">Click draw to begin.</p>
+          <img id="card-img-starter" class="active-card-img d-none" alt="Starter card">
         </div>
         <p><button class="btn btn-lg btn-success" onclick="drawCard('starter');">Draw</button></p>
       </div>
@@ -137,7 +147,8 @@
       <div class="deck">
         <h2 class="mt-4">Main deck</h2>
         <div class="active-card">
-          <p id="card-text-main" class="active-card-text">Click draw to begin.</p>
+          <p id="card-placeholder-main" class="active-card-text">Click draw to begin.</p>
+          <img id="card-img-main" class="active-card-img d-none" alt="Main card">
         </div>
         <p><button class="btn btn-lg btn-success" onclick="drawCard('main');">Draw</button></p>
       </div>
@@ -147,7 +158,8 @@
       <div class="deck">
         <h2 class="mt-4">Ending deck</h2>
         <div class="active-card">
-          <p id="card-text-ending" class="active-card-text">Click draw to begin.</p>
+          <p id="card-placeholder-ending" class="active-card-text">Click draw to begin.</p>
+          <img id="card-img-ending" class="active-card-img d-none" alt="Ending card">
         </div>
         <p><button class="btn btn-lg btn-success" onclick="drawCard('ending');">Draw</button></p>
       </div>
@@ -156,47 +168,35 @@
   </div>
 
   <script>
-    // Hardcoded card content. Edit these three lists directly to change what's in each deck
-    // — one string per card, same "one per line" spirit as the original setup box.
+    // Image-based cards, loaded from the /cards folder in this repo.
+    // Filenames must exactly match "<Label> Card - <number>.png" (case-sensitive on GitHub Pages).
+    // To add cards: bump the count below and upload the matching numbered file — numbering
+    // must stay sequential from 1 with no gaps, since the count is all this reads from.
+    const DeckLabels = {
+      starter: 'Starter',
+      main: 'Main',
+      ending: 'Ending'
+    };
+
+    const CardCounts = {
+      starter: 1,
+      main: 1,
+      ending: 1
+    };
+
+    function buildCardList(deckName) {
+      let label = DeckLabels[deckName];
+      let list = [];
+      for (let i = 1; i <= CardCounts[deckName]; i++) {
+        list.push('cards/' + label + ' Card - ' + i + '.png');
+      }
+      return list;
+    }
+
     const CardLists = {
-      starter: [
-        "Ask your partner to describe what they want to do tonight — no touching yet.",
-        "Trace a single finger along their collarbone, slow enough to be a tease.",
-        "Whisper one thing you've been thinking about all day.",
-        "Blindfold on. No talking for two minutes, just touch.",
-        "Say your limit and your green light out loud before going further.",
-        "Light scratches down the back, nothing else, for 30 seconds.",
-        "Hold eye contact for a full minute without touching or speaking.",
-        "Slowly undress one item of clothing, no rush.",
-        "Ask: “What's one thing you want me to do differently tonight?”",
-        "Pick a safeword check-in and agree on it before continuing."
-      ],
-      main: [
-        "Restrain their wrists — rope, cuffs, or a scarf — for the next five minutes.",
-        "Give three firm spanks, then ask how it felt.",
-        "Whisper something filthy and make them repeat it back.",
-        "Edge them — bring them close, then stop completely. Repeat twice.",
-        "Blindfolded: guess the sensation being used on your skin.",
-        "Give a command and expect it followed without question, just this once.",
-        "Trade roles for the next three cards, no explanation given.",
-        "Use something cold somewhere unexpected.",
-        "One person controls orgasm for 10 minutes — the other must ask permission.",
-        "Bite, gently, somewhere that leaves a mark you'll find tomorrow.",
-        "Tie a simple rope cuff or harness element, however far your skill goes.",
-        "Switch who's giving orders for the rest of the scene."
-      ],
-      ending: [
-        "Bring water. Make sure it's actually been drunk.",
-        "Wrap up in a blanket together and just breathe for two minutes.",
-        "Say one genuine thing you appreciated about tonight.",
-        "Rate the scene 1–10 — explain only if you want to.",
-        "Ask “is there anything you need right now?” and actually wait for the answer.",
-        "Gentle touch only — no more play, just comfort.",
-        "Offer a snack. Sugar helps more than people expect.",
-        "Ask if there's anything to talk through before tomorrow.",
-        "Hold each other in silence for as long as feels right.",
-        "Write down one thing to remember for next time."
-      ]
+      starter: buildCardList('starter'),
+      main: buildCardList('main'),
+      ending: buildCardList('ending')
     };
 
     let Decks = { starter: [], main: [], ending: [] };
@@ -218,8 +218,22 @@
       if (Decks[deckName].length < 1) {
         refillCards(deckName);
       }
-      let card = Decks[deckName].pop();
-      document.getElementById('card-text-' + deckName).innerHTML = card;
+      let cardPath = Decks[deckName].pop();
+      let img = document.getElementById('card-img-' + deckName);
+      let placeholder = document.getElementById('card-placeholder-' + deckName);
+
+      img.onerror = function () {
+        placeholder.textContent = 'Couldn\u2019t load "' + cardPath + '" \u2014 check the file was uploaded with that exact name.';
+        placeholder.classList.remove('d-none');
+        img.classList.add('d-none');
+      };
+
+      img.onload = function () {
+        placeholder.classList.add('d-none');
+        img.classList.remove('d-none');
+      };
+
+      img.src = encodeURI(cardPath);
     }
 
     function switchDeck(deckName) {
