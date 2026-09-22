@@ -84,15 +84,15 @@
     .deck-tabs .nav-link[data-deck="ending"].active { border-top: 3px solid #d6249f; color: #d6249f; }
 
     .active-card {
-      padding: 0;
-      height: auto;
-      width: auto;
-      max-width: 100%;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      background-color: transparent;
-      margin: 0 auto 20px auto;
+      padding: 0 !important;
+      height: auto !important;
+      width: auto !important;
+      max-width: 100% !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      background-color: transparent !important;
+      margin: 0 auto 20px auto !important;
       color: var(--text);
       display: flex;
       align-items: center;
@@ -100,8 +100,10 @@
     }
 
     .active-card-img {
-      max-width: 100%;
-      max-height: 480px;
+      max-width: 100% !important;
+      max-height: 480px !important;
+      height: auto !important;
+      width: auto !important;
       display: block;
       filter: drop-shadow(0 10px 22px var(--card-shadow));
     }
@@ -134,17 +136,17 @@
 
     @media (min-width: 992px) {
       .deck-tabs .nav-link {
-        font-size: 1.35rem;
-        padding: 0.9rem 1.75rem;
+        font-size: 1.35rem !important;
+        padding: 0.9rem 1.75rem !important;
       }
 
       .active-card-img {
-        max-height: 640px;
+        max-height: 640px !important;
       }
 
       .deck-pane .btn-lg {
-        font-size: 1.35rem;
-        padding: 0.85rem 2.25rem;
+        font-size: 1.35rem !important;
+        padding: 0.85rem 2.25rem !important;
       }
     }
   </style>
