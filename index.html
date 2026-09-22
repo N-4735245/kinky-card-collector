@@ -11,6 +11,37 @@
   <link rel="stylesheet" href="style.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
     integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+
+  <style>
+    /* Force overall dark mode theme colors */
+    body {
+      background-color: #121212 !important;
+      color: #ffffff !important;
+    }
+    
+    /* Make structural container cards dark grey with white text */
+    .card, .container, .box, #setup-section, #draw-section {
+      background-color: #1e1e1e !important;
+      color: #ffffff !important;
+      border-color: #333333 !important;
+    }
+
+    /* Force interactive input forms and buttons to contrast nicely */
+    textarea, input, select {
+      background-color: #2a2a2a !important;
+      color: #ffffff !important;
+      border: 1px solid #444444 !important;
+    }
+
+    /* Style the main virtual drawn card so text stays crisp and legible */
+    #current-card, .virtual-card-face {
+      background-color: #252525 !important;
+      color: #ffffff !important;
+      border: 2px solid #555555 !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+    }
+  </style>
+
 </head>
 
 <body>
