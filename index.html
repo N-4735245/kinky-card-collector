@@ -380,7 +380,8 @@
       let label = DeckLabels[deckName];
       let list = [];
       for (let i = 1; i <= CardCounts[deckName]; i++) {
-        list.push('cards/' + label + ' Card - ' + i + '.png');
+        if (CardCounts[deckName] > 9 && i < 10) list.push('cards/' + label + ' Card - 0' + i + '.png');
+        else list.push('cards/' + label + ' Card - ' + i + '.png');
       }
       return list;
     }
